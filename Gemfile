@@ -6,4 +6,5 @@ gem 'dm-migrations'
 gem 'dm-validations'
 gem 'dm-timestamps'
 gem 'dm-mysql-adapter'
+gem 'thin'
 

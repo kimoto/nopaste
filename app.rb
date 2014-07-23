@@ -7,6 +7,10 @@ require 'dm-validations'
 require 'dm-timestamps'
 require 'sinatra'
 require 'erubis'
+require 'json'
+
+use Rack::Session::Pool
+set :protection, :session => true
 
 # Models
 class Entry
@@ -30,19 +34,30 @@ configure do
   DataMapper.finalize
   DataMapper.setup(:default, "mysql://127.0.0.1/nopaste")
   DataMapper.auto_upgrade!
+  DataMapper::Model.raise_on_save_failure = true
 end
 
 get '/' do
   @total_entries = Entry.count
-  @entries = Entry.first(settings.max_entries, :order => [:created_at.desc])
+  @entries = []
   erb :index
 end
 
 post '/' do
   if @entry = Entry.create(:body => params[:body])
-    redirect "/entry/#{@entry.digest}"
+    redirect "/entry/#{@entry.digest}", 301
   else
-    erb :index
+    content_type "application/json"
+    JSON.generate({:status => {:code => 500, :text => 'Failed'}})
+  end
+end
+
+post '/api/post' do
+  content_type "application/json"
+  if @entry = Entry.create(:body => params[:body])
+    JSON.generate({:status => {:code => 200, :text => 'Success!'}, :permalink => request.scheme + '://' + request.host_with_port + "/entry/#{@entry.digest}"})
+  else
+    JSON.generate({:status => {:code => 500, :text => 'Failed'}})
   end
 end
 
@@ -70,8 +85,6 @@ __END__
   </form>
 
   <p>entries: <%= @total_entries %></p>
-
-  <hr />
 
   <% @entries.each do |entry| %>
   <code><pre>
