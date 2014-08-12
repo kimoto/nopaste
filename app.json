@@ -1,11 +1,4 @@
 {
     "name": "kimoto's nopaste",
-    "description": "kimoto's nopaste",
-    "website": "https://github.com/kimoto/nopaste",
-    "repository": "https://github.com/kimoto/nopaste",
-    "keywords": ["nopaste"],
-    "env": {
-        "RAILS_ENV": "production"
-    },
     "addons": ["heroku-postgresql:dev"]
 }
