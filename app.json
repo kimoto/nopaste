@@ -1,4 +1,4 @@
 {
     "name": "kimoto's nopaste",
-    "addons": ["heroku-postgresql:dev"]
+    "addons": ["heroku-postgresql:hobby-dev"]
 }
