@@ -37,7 +37,7 @@ configure do
   set :max_entries, 10
   set :protection, true
   DataMapper.finalize
-  DataMapper.setup(:default, "mysql://127.0.0.1/nopaste")
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || "mysql://127.0.0.1/nopaste")
   DataMapper.auto_upgrade!
   DataMapper::Model.raise_on_save_failure = true
 end

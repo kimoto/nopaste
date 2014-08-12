@@ -8,4 +8,5 @@ gem 'dm-timestamps'
 gem 'dm-mysql-adapter'
 gem 'thin'
 gem 'redcarpet'
+gem 'dm-postgres-adapter'
 
