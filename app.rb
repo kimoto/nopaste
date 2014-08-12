@@ -8,9 +8,8 @@ require 'dm-timestamps'
 require 'sinatra'
 require 'erubis'
 require 'json'
-
-use Rack::Session::Pool
-set :protection, :session => true
+require 'redcarpet'
+require 'rack/protection'
 
 # Models
 class Entry
@@ -20,6 +19,11 @@ class Entry
   property :body, Text
   timestamps :at # created_at, updated_at
   validates_presence_of :body, :message => '本文が入力されていません'
+
+  def body_html
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
+    markdown.render(self.body)
+  end
 
   before :create do |entry|
     entry.digest = Digest::SHA256.hexdigest(Time.now.to_i.to_s)
@@ -31,6 +35,7 @@ configure do
   enable :inline_templates
   set :erb, :escape_html => true
   set :max_entries, 10
+  set :protection, true
   DataMapper.finalize
   DataMapper.setup(:default, "mysql://127.0.0.1/nopaste")
   DataMapper.auto_upgrade!
@@ -66,6 +71,12 @@ get '/entry/:digest' do
   erb :permalink
 end
 
+get '/entry/raw/:digest' do
+  content_type 'text/plain'
+  @entry = Entry.first(:digest => params[:digest])
+  @entry.body
+end
+
 __END__
 @@ index
 <html>
@@ -80,7 +91,8 @@ __END__
   </ul>
 
   <form method="post" action="/">
-    <textarea name="body" style="width: 500px; height: 150px;"></textarea><br />
+    <p>markdown</p>
+    <textarea name="body" style="width: 500px; height: 300px;"></textarea><br />
     <input type="submit" value="Post" />
   </form>
 
@@ -100,8 +112,11 @@ __END__
 <html>
 <body>
   <h1><a href="/">nopaste</a></h1>
+  <p>
+    (<a href="/entry/raw/<%= @entry.digest %>">raw</a>)
+  </p>
   <code><pre>
-<%= @entry.body %>
+<%== @entry.body_html %>
   </pre></code>
   </body>
 </html>
