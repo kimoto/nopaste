@@ -86,8 +86,7 @@ end
 
 get '/entry/:digest' do
   cache_control :public, :must_revalidate, :max_age => settings.cache_time
-  @entry = Entry.first(:digest => params[:digest])
-  if @entry
+  if @entry = Entry.first(:digest => params[:digest])
     erb :permalink
   else
     not_found
@@ -96,8 +95,7 @@ end
 
 get '/entry/raw/:digest' do
   cache_control :public, :must_revalidate, :max_age => settings.cache_time
-  @entry = Entry.first(:digest => params[:digest])
-  if @entry
+  if @entry = Entry.first(:digest => params[:digest])
     render_text @entry.body
   else
     not_found
