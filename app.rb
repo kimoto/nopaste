@@ -12,7 +12,7 @@ class Entry
   property :body, Text # limitation = mysql:65535
   timestamps :at # created_at, updated_at
   validates_presence_of :body, :message => '本文が入力されていません'
-  validates_length_of :body, :max => 1024 * 1000
+  validates_length_of :body, :max => 65535
 
   def body_html
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
