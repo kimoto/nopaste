@@ -1,42 +1,26 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-ENV['RACK_ENV'] = 'test'
-
-require_relative '../app'  # <-- your sinatra app
-require 'rspec'
-require 'rack/test'
-
-RSpec.configure do |config|
-  config.include Rack::Test::Methods
-  DataMapper::setup(:default, ENV['DATABASE_URL'] || settings.dsn)
-  DataMapper.finalize
-  DataMapper.auto_migrate!
-end
-
 describe 'The Main App' do
-  include Rack::Test::Methods
-  
   def app
     Sinatra::Application
   end
 
-  it "always true" do
+  it "常にtrue" do
     expect(true).to eq true
   end
 
-  it "404 Not Found" do
+  it "適当なパスは404になる" do
     get '/404_not_found_path'
     expect(last_response.not_found?).to be true
   end
 
-  it "top page" do
+  it "トップページはGETできる" do
     get '/'
     expect(last_response.ok?).to be true
   end
 
-  # jsonで記事登録できることの確認
-  it "json api cant get" do
+  it "JSON APIはGETできない" do
     get '/api/post'
     expect(last_response.ok?).to be false
   end
@@ -108,5 +92,17 @@ describe 'The Main App' do
     expect(last_response.headers['Content-Type']).to eq("text/html;charset=utf-8")
     entry = Entry.last
     expect(last_response.headers['Location']).to eq("http://example.org/entry/#{entry.digest}")
+  end
+
+  it "存在しないdigestにアクセスしたら404" do
+    get "/entry/not_found_digest"
+    expect(last_response.ok?).to be false
+    expect(last_response.status).to be 404
+  end
+
+  it "存在しないdigestにアクセスしたら404 (raw)" do
+    get "/entry/raw/not_found_digest"
+    expect(last_response.ok?).to be false
+    expect(last_response.status).to be 404
   end
 end

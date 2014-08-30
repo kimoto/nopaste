@@ -46,6 +46,28 @@ configure do
   DataMapper::Model.raise_on_save_failure = true
 end
 
+def render_json(status_code, msg, ext_json={})
+  content_type "application/json"
+  JSON.generate({:status => {:code => status_code, :text => msg}}.merge(ext_json))
+end
+
+def render_success_json(msg, ext_json={})
+  render_json(200, msg, ext_json)
+end
+
+def render_failed_json(msg, ext_json={})
+  render_json(500, msg, ext_json)
+end
+
+def render_text(text)
+  content_type 'text/plain'
+  text
+end
+
+def entry_permalink(entry)
+  return request.scheme + '://' + request.host_with_port + "/entry/#{entry.digest}"
+end
+
 get '/' do
   @total_entries = Entry.count
   @entries = []
@@ -55,32 +77,37 @@ end
 post '/' do
   begin
     @entry = Entry.create(:body => params[:body])
-    redirect "/entry/#{@entry.digest}", 301
-  rescue => ex
-    content_type "application/json"
-    JSON.generate({:status => {:code => 500, :text => 'Failed'}})
+    redirect entry_permalink(@entry), 301
+  rescue
+    render_failed_json('Failed')
   end
 end
 
 post '/api/post' do
-  content_type "application/json"
   begin
     @entry = Entry.create(:body => params[:body])
-    JSON.generate({:status => {:code => 200, :text => 'Success!'}, :permalink => request.scheme + '://' + request.host_with_port + "/entry/#{@entry.digest}"})
+    render_success_json('Success!', :permalink => entry_permalink(@entry))
   rescue
-    JSON.generate({:status => {:code => 500, :text => 'Failed'}})
+    render_failed_json('Failed')
   end
 end
 
 get '/entry/:digest' do
   @entry = Entry.first(:digest => params[:digest])
-  erb :permalink
+  if @entry
+    erb :permalink
+  else
+    not_found
+  end
 end
 
 get '/entry/raw/:digest' do
-  content_type 'text/plain'
   @entry = Entry.first(:digest => params[:digest])
-  @entry.body
+  if @entry
+    render_text @entry.body
+  else
+    not_found
+  end
 end
 
 __END__

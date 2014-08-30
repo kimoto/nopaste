@@ -1,6 +1,6 @@
 development:
-        dsn: "mysql://127.0.0.1/nopaste"
+        dsn: "mysql://127.0.0.1/nopaste_dev"
 test:
         dsn: "mysql://127.0.0.1/nopaste_test"
 production:
-        dsn: "mysql://127.0.0.1/nopaste_dev"
+        dsn: "mysql://127.0.0.1/nopaste"

@@ -14,7 +14,17 @@
 # users commonly want.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+ENV['RACK_ENV'] = 'test'
+require_relative '../app'  # <-- your sinatra app
+
+require 'rspec'
+require 'rack/test'
 RSpec.configure do |config|
+  config.include Rack::Test::Methods
+  DataMapper::setup(:default, ENV['DATABASE_URL'] || settings.dsn)
+  DataMapper.finalize
+  DataMapper.auto_migrate!
+
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
 =begin
