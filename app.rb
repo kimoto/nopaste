@@ -9,9 +9,10 @@ class Entry
   include DataMapper::Resource
   property :id, Serial
   property :digest, String, :length => 64, :unique_index => true
-  property :body, Text
+  property :body, Text # limitation = mysql:65535
   timestamps :at # created_at, updated_at
   validates_presence_of :body, :message => '本文が入力されていません'
+  validates_length_of :body, :max => 1024 * 1000
 
   def body_html
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
@@ -20,6 +21,12 @@ class Entry
 
   before :create do |entry|
     entry.digest = SecureRandom.hex(32)
+  end
+end
+
+class DataMapper::SaveFailureError
+  def to_s
+    self.resource.errors.inspect
   end
 end
 
