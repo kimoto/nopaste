@@ -1,17 +1,8 @@
 #!/bin/env ruby
 # encoding: utf-8
 # Author: kimoto
-require 'dm-core'
-require 'dm-migrations'
-require 'dm-validations'
-require 'dm-timestamps'
-require 'sinatra'
-require 'erubis'
-require 'json'
-require 'redcarpet'
-require 'rack/protection'
-require 'sinatra/config_file'
-require 'securerandom'
+require 'bundler'
+Bundler.require
 
 # Models
 class Entry
@@ -40,6 +31,7 @@ configure do
   set :erb, :escape_html => true
   set :max_entries, 10
   set :protection, true
+  set :cache_time, 60
   DataMapper.finalize
   DataMapper.setup(:default, ENV['DATABASE_URL'] || settings.dsn)
   DataMapper.auto_upgrade!
@@ -93,6 +85,7 @@ post '/api/post' do
 end
 
 get '/entry/:digest' do
+  cache_control :public, :must_revalidate, :max_age => settings.cache_time
   @entry = Entry.first(:digest => params[:digest])
   if @entry
     erb :permalink
@@ -102,6 +95,7 @@ get '/entry/:digest' do
 end
 
 get '/entry/raw/:digest' do
+  cache_control :public, :must_revalidate, :max_age => settings.cache_time
   @entry = Entry.first(:digest => params[:digest])
   if @entry
     render_text @entry.body

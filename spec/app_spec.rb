@@ -3,7 +3,7 @@
 
 describe 'The Main App' do
   def app
-    Sinatra::Application
+    @app = Sinatra::Application
   end
 
   it "常にtrue" do
@@ -104,5 +104,17 @@ describe 'The Main App' do
     get "/entry/raw/not_found_digest"
     expect(last_response.ok?).to be false
     expect(last_response.status).to be 404
+  end
+
+  it "entryページがキャッシュされている" do
+    entry = Entry.first
+    get "/entry/#{entry.digest}"
+    expect(last_response.headers["Cache-Control"]).to eq("public, must-revalidate, max-age=#{@app.settings.cache_time}")
+  end
+
+  it "entry(raw)ページがキャッシュされている" do
+    entry = Entry.first
+    get "/entry/raw/#{entry.digest}"
+    expect(last_response.headers["Cache-Control"]).to eq("public, must-revalidate, max-age=#{@app.settings.cache_time}")
   end
 end
