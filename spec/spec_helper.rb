@@ -18,6 +18,7 @@ ENV['RACK_ENV'] = 'test'
 require_relative '../app'  # <-- your sinatra app
 
 require 'rack/test'
+require 'capybara/rspec'
 RSpec.configure do |config|
   config.include Rack::Test::Methods
   DataMapper::setup(:default, ENV['DATABASE_URL'] || settings.dsn)
@@ -90,3 +91,5 @@ end
 #SimpleCov.start do
 #  add_filter 'spec'
 #end
+
+Capybara.app = Sinatra::Application

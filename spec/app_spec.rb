@@ -1,7 +1,7 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-describe 'The Main App' do
+describe 'The Main App', :type => :feature do
   def app
     @app = Sinatra::Application
   end
@@ -116,5 +116,14 @@ describe 'The Main App' do
     entry = Entry.first
     get "/entry/raw/#{entry.digest}"
     expect(last_response.headers["Cache-Control"]).to eq("public, must-revalidate, max-age=#{@app.settings.cache_time}")
+  end
+
+  it "トップページにデータ入力してボタン押して投稿できる" do
+    visit '/'
+    fill_in 'body', :with => 'this is my town!!'
+    click_button 'Post'
+    expect(page.status_code).to be 200
+    entry = Entry.last
+    expect(entry.body).to eq('this is my town!!')
   end
 end

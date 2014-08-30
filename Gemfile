@@ -23,4 +23,8 @@ end
 group :test do
   gem 'rack-test', require: 'rack/test'
   gem 'rspec'
+  gem 'rspec-autotest'
+  gem 'autotest-fsevent'
+  gem 'capybara','>=2.2.0.beta'
+  gem 'autotest'
 end
