@@ -10,6 +10,8 @@ require 'erubis'
 require 'json'
 require 'redcarpet'
 require 'rack/protection'
+require 'sinatra/config_file'
+require 'securerandom'
 
 # Models
 class Entry
@@ -26,9 +28,11 @@ class Entry
   end
 
   before :create do |entry|
-    entry.digest = Digest::SHA256.hexdigest(Time.now.to_i.to_s)
+    entry.digest = SecureRandom.hex(32)
   end
 end
+
+config_file './etc/config.yaml'
 
 # Sinatra
 configure do
@@ -37,7 +41,7 @@ configure do
   set :max_entries, 10
   set :protection, true
   DataMapper.finalize
-  DataMapper.setup(:default, ENV['DATABASE_URL'] || "mysql://127.0.0.1/nopaste")
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || settings.dsn)
   DataMapper.auto_upgrade!
   DataMapper::Model.raise_on_save_failure = true
 end
@@ -49,9 +53,10 @@ get '/' do
 end
 
 post '/' do
-  if @entry = Entry.create(:body => params[:body])
+  begin
+    @entry = Entry.create(:body => params[:body])
     redirect "/entry/#{@entry.digest}", 301
-  else
+  rescue => ex
     content_type "application/json"
     JSON.generate({:status => {:code => 500, :text => 'Failed'}})
   end
@@ -59,9 +64,10 @@ end
 
 post '/api/post' do
   content_type "application/json"
-  if @entry = Entry.create(:body => params[:body])
+  begin
+    @entry = Entry.create(:body => params[:body])
     JSON.generate({:status => {:code => 200, :text => 'Success!'}, :permalink => request.scheme + '://' + request.host_with_port + "/entry/#{@entry.digest}"})
-  else
+  rescue
     JSON.generate({:status => {:code => 500, :text => 'Failed'}})
   end
 end
