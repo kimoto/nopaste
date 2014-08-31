@@ -27,4 +27,5 @@ group :test do
   gem 'autotest-fsevent'
   gem 'capybara','>=2.2.0.beta'
   gem 'autotest'
+  gem 'rake'
 end

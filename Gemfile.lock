@@ -60,6 +60,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rake (10.1.0)
     redcarpet (3.1.2)
     rspec (3.0.0)
       rspec-core (~> 3.0.0)
@@ -116,6 +117,7 @@ DEPENDENCIES
   json
   rack-cache
   rack-test
+  rake
   redcarpet
   rspec
   rspec-autotest
