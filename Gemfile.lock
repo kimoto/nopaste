@@ -31,9 +31,6 @@ GEM
     dm-postgres-adapter (1.2.0)
       dm-do-adapter (~> 1.2.0)
       do_postgres (~> 0.10.6)
-    dm-sqlite-adapter (1.2.0)
-      dm-do-adapter (~> 1.2.0)
-      do_sqlite3 (~> 0.10.6)
     dm-timestamps (1.2.0)
       dm-core (~> 1.2.0)
     dm-validations (1.2.0)
@@ -41,8 +38,6 @@ GEM
     do_mysql (0.10.14)
       data_objects (= 0.10.14)
     do_postgres (0.10.14)
-      data_objects (= 0.10.14)
-    do_sqlite3 (0.10.14)
       data_objects (= 0.10.14)
     erubis (2.7.0)
     eventmachine (1.0.3)
@@ -110,7 +105,6 @@ DEPENDENCIES
   dm-migrations
   dm-mysql-adapter
   dm-postgres-adapter
-  dm-sqlite-adapter
   dm-timestamps
   dm-validations
   erubis
