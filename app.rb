@@ -129,14 +129,19 @@ __END__
 
 @@ permalink
 <html>
+<head>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
 <body>
   <h1><a href="/">nopaste</a></h1>
   <p>
     (<a href="/entry/raw/<%= @entry.digest %>">raw</a>)
   </p>
-  <code><pre>
-<%== @entry.body_html %>
-  </pre></code>
+  <pre><code>
+<%= @entry.body %>
+  </code></pre>
   </body>
 </html>
 
