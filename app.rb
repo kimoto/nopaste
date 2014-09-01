@@ -20,7 +20,7 @@ class Entry
   end
 
   before :create do |entry|
-    entry.digest = SecureRandom.hex(32)
+    entry.digest = SecureRandom.hex(32) unless entry.digest
   end
 end
 
@@ -36,7 +36,6 @@ config_file './etc/config.yaml'
 configure do
   enable :inline_templates
   set :erb, :escape_html => true
-  set :max_entries, 10
   set :protection, true
   set :cache_time, 60
   DataMapper.finalize
@@ -68,8 +67,6 @@ def entry_permalink(entry)
 end
 
 get '/' do
-  @total_entries = Entry.count
-  @entries = []
   erb :index
 end
 
@@ -127,16 +124,6 @@ __END__
     <textarea name="body" style="width: 500px; height: 300px;"></textarea><br />
     <input type="submit" value="Post" />
   </form>
-
-  <p>entries: <%= @total_entries %></p>
-
-  <% @entries.each do |entry| %>
-  <code><pre>
-<%= entry.body %>
-  </pre></code>
-  <span><a href="/entry/<%= entry.digest %>"><%= entry.created_at %></a></span>
-  <hr />
-  <% end %>
 </body>
 </html>
 

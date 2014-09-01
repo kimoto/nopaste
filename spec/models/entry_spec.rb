@@ -7,4 +7,23 @@ describe 'entry' do
     entry = Entry.create(:body => data)
     expect(entry.body).to eq(data)
   end
+
+  it '指定しようと思えば任意のdigestを指定できる' do
+    entry = Entry.create(:digest => 'aAaA', :body => 'hell world!')
+    expect(entry.digest).to eq('aAaA')
+  end
+
+  it 'digestの長さは64文字以下である' do
+    expect{
+      Entry.create(:digest => 'A' * 65, :body => 'aaa')
+    }.to raise_error(DataMapper::SaveFailureError)
+    entry = Entry.create(:digest => 'A' * 64, :body => 'aaa')
+    expect(entry.digest).to eq('A' * 64)
+  end
+
+  # markdownで本文が書ける
+  it 'markdownで本文が書ける' do
+    entry = Entry.create(:body => '*blah*')
+    expect(entry.body_html).to eq("<p><em>blah</em></p>\n")
+  end
 end
