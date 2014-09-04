@@ -28,4 +28,5 @@ group :test do
   gem 'capybara','>=2.2.0.beta'
   gem 'autotest'
   gem 'rake'
+  gem 'coveralls', require: false
 end

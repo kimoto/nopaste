@@ -93,3 +93,6 @@ end
 #end
 
 Capybara.app = Sinatra::Application
+
+require 'coveralls'
+Coveralls.wear!
