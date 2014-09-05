@@ -20,10 +20,4 @@ describe 'entry' do
     entry = Entry.create(:digest => 'A' * 64, :body => 'aaa')
     expect(entry.digest).to eq('A' * 64)
   end
-
-  # markdownで本文が書ける
-  it 'markdownで本文が書ける' do
-    entry = Entry.create(:body => '*blah*')
-    expect(entry.body_html).to eq("<p><em>blah</em></p>\n")
-  end
 end

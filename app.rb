@@ -14,11 +14,6 @@ class Entry
   validates_presence_of :body, :message => '本文が入力されていません'
   validates_length_of :body, :max => 65535
 
-  def body_html
-    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
-    markdown.render(self.body)
-  end
-
   before :create do |entry|
     entry.digest = SecureRandom.hex(32) unless entry.digest
   end
@@ -120,7 +115,6 @@ __END__
   </ul>
 
   <form method="post" action="/">
-    <p>markdown</p>
     <textarea name="body" style="width: 500px; height: 300px;"></textarea><br />
     <input type="submit" value="Post" />
   </form>
