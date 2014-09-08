@@ -15,6 +15,7 @@ gem 'dm-postgres-adapter'
 #gem 'dm-sqlite-adapter'
 gem 'json'
 gem 'rack-cache', require: 'rack/cache'
+gem 'rspec'
 
 group :development do
   gem 'sinatra-reloader', require: 'sinatra/reloader'
@@ -23,7 +24,6 @@ end
 
 group :test do
   gem 'rack-test', require: 'rack/test'
-  gem 'rspec'
   gem 'rspec-autotest'
   gem 'autotest-fsevent'
   gem 'capybara','>=2.2.0.beta'
