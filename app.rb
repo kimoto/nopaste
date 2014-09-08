@@ -4,7 +4,7 @@
 require 'bundler'
 Bundler.require
 
-# Models
+# 記事を表すクラス
 class Entry
   include DataMapper::Resource
   property :id, Serial
@@ -20,6 +20,7 @@ class Entry
 end
 
 class DataMapper::SaveFailureError
+  # 元の例外クラスのエラー文字列がわかりにくいので変更している
   def to_s
     self.resource.errors.inspect
   end
@@ -44,19 +45,14 @@ def render_json(status_code, msg, ext_json={})
   JSON.generate({:status => {:code => status_code, :text => msg}}.merge(ext_json))
 end
 
-def render_success_json(msg, ext_json={})
-  render_json(200, msg, ext_json)
-end
-
-def render_failed_json(msg, ext_json={})
-  render_json(500, msg, ext_json)
-end
-
 def render_text(text)
   content_type 'text/plain'
   text
 end
 
+# 記事のpermalinkのURL文字列を返す
+# @param [Entry] entry 記事インスタンス
+# @return [String] URL文字列
 def entry_permalink(entry)
   return request.scheme + '://' + request.host_with_port + "/entry/#{entry.digest}"
 end
@@ -70,16 +66,16 @@ post '/' do
     @entry = Entry.create(:body => params[:body])
     redirect entry_permalink(@entry), 301
   rescue
-    render_failed_json('Failed')
+    render_json(500, 'Failed')
   end
 end
 
 post '/api/post' do
   begin
     @entry = Entry.create(:body => params[:body])
-    render_success_json('Success!', :permalink => entry_permalink(@entry))
+    render_json(200, 'Success!', :permalink => entry_permalink(@entry))
   rescue
-    render_failed_json('Failed')
+    render_json(500, 'Failed')
   end
 end
 

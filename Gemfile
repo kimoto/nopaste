@@ -18,6 +18,7 @@ gem 'rack-cache', require: 'rack/cache'
 
 group :development do
   gem 'sinatra-reloader', require: 'sinatra/reloader'
+  gem 'yard'
 end
 
 group :test do
