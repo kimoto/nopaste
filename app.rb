@@ -37,6 +37,7 @@ configure do
   DataMapper.finalize
   DataMapper.setup(:default, ENV['DATABASE_URL'] || settings.dsn)
   DataMapper.auto_upgrade!
+  DataMapper.logger.set_log STDERR, :debug, "", true
   DataMapper::Model.raise_on_save_failure = true
 end
 
@@ -63,11 +64,24 @@ end
 
 post '/' do
   begin
+    unless validate_recaptcha( params["g-recaptcha-response"] )
+      raise "You arent human!"
+    end
+
     @entry = Entry.create(:body => params[:body])
     redirect entry_permalink(@entry), 301
-  rescue
-    render_json(500, 'Failed')
+  rescue => ex
+    render_json(500, "Failed: #{ex.message}")
   end
+end
+
+def validate_recaptcha(code)
+  resp = Net::HTTP.post_form(
+    URI("https://www.google.com/recaptcha/api/siteverify"),
+    :secret => '6Ldn19cSAAAAAC_BL3p8LILXiCJGO8UwPV-ePdjo',
+    :response => code, :remote_ip => request.ip)
+  json = JSON.parse(resp.body)
+  return json["success"]
 end
 
 post '/api/post' do
@@ -100,6 +114,9 @@ end
 __END__
 @@ index
 <html>
+<head>
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
 <body>
   <h1><a href="/">nopaste</a></h1>
   <ul>
@@ -112,7 +129,8 @@ __END__
 
   <form method="post" action="/">
     <textarea name="body" style="width: 500px; height: 300px;"></textarea><br />
-    <input type="submit" value="Post" />
+    <div class="g-recaptcha" data-sitekey="6Ldn19cSAAAAAJZ1RZQcvJNTl0JstpMhQ1d_LOTA"></div>
+    <input type="submit" style="font-size: 200%; height: 50px; width: 200px;" value="Post" />
   </form>
 </body>
 </html>
