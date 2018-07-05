@@ -4,6 +4,8 @@
 require 'bundler'
 Bundler.require
 
+require 'net/http'
+
 # 記事を表すクラス
 class Entry
   include DataMapper::Resource
@@ -26,7 +28,7 @@ class DataMapper::SaveFailureError
   end
 end
 
-config_file './etc/config.yaml'
+config_file './etc/config.yml'
 
 # Sinatra
 configure do

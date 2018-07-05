@@ -1,6 +1,0 @@
-development:
-        dsn: "mysql://127.0.0.1/nopaste_dev"
-test:
-        dsn: "mysql://127.0.0.1/nopaste_test"
-production:
-        dsn: "mysql://127.0.0.1/nopaste?encoding=utf8mb4"
