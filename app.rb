@@ -32,13 +32,10 @@ config_file './etc/config.yml'
 
 # Sinatra
 configure do
-  recaptcha_token = ENV['RECAPTCHA_TOKEN'] || settings.recaptcha_token rescue nil
-
   enable :inline_templates
   set :erb, :escape_html => true
   set :protection, true
   set :cache_time, 60
-  set :recaptcha_token, recaptcha_token
   DataMapper.finalize
   DataMapper.setup(:default, ENV['DATABASE_URL'] || settings.dsn)
   DataMapper.auto_upgrade!
@@ -69,24 +66,11 @@ end
 
 post '/' do
   begin
-    unless validate_recaptcha( params["g-recaptcha-response"] )
-      raise "You arent human!"
-    end
-
     @entry = Entry.create(:body => params[:body])
     redirect entry_permalink(@entry), 301
   rescue => ex
     render_json(500, "Failed: #{ex.message}")
   end
-end
-
-def validate_recaptcha(code)
-  resp = Net::HTTP.post_form(
-    URI("https://www.google.com/recaptcha/api/siteverify"),
-    :secret => '6Ldn19cSAAAAAC_BL3p8LILXiCJGO8UwPV-ePdjo',
-    :response => code, :remote_ip => request.ip)
-  json = JSON.parse(resp.body)
-  return json["success"]
 end
 
 post '/api/post' do
@@ -134,7 +118,6 @@ __END__
 
   <form method="post" action="/">
     <textarea name="body" style="width: 500px; height: 300px;"></textarea><br />
-    <div class="g-recaptcha" data-sitekey="<%= settings.recaptcha_token %>"></div>
     <input type="submit" style="font-size: 200%; height: 50px; width: 200px;" value="Post" />
   </form>
 </body>
