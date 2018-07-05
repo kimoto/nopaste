@@ -32,11 +32,13 @@ config_file './etc/config.yml'
 
 # Sinatra
 configure do
+  recaptcha_token = ENV['RECAPTCHA_TOKEN'] || settings.recaptcha_token rescue nil
+
   enable :inline_templates
   set :erb, :escape_html => true
   set :protection, true
   set :cache_time, 60
-  set :recaptcha_token, ENV['RECAPTCHA_TOKEN'] || settings.recaptcha_token
+  set :recaptcha_token, recaptcha_token
   DataMapper.finalize
   DataMapper.setup(:default, ENV['DATABASE_URL'] || settings.dsn)
   DataMapper.auto_upgrade!
