@@ -36,6 +36,7 @@ configure do
   set :erb, :escape_html => true
   set :protection, true
   set :cache_time, 60
+  set :recaptcha_token, ENV['RECAPTCHA_TOKEN'] || settings.recaptcha_token
   DataMapper.finalize
   DataMapper.setup(:default, ENV['DATABASE_URL'] || settings.dsn)
   DataMapper.auto_upgrade!
@@ -131,7 +132,7 @@ __END__
 
   <form method="post" action="/">
     <textarea name="body" style="width: 500px; height: 300px;"></textarea><br />
-    <div class="g-recaptcha" data-sitekey="6Ldn19cSAAAAAJZ1RZQcvJNTl0JstpMhQ1d_LOTA"></div>
+    <div class="g-recaptcha" data-sitekey="<%= settings.recaptcha_token %>"></div>
     <input type="submit" style="font-size: 200%; height: 50px; width: 200px;" value="Post" />
   </form>
 </body>
